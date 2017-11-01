@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>WebGL Fragment Shader by David Cline</title>
+
+<style type="text/css">
+	.fullSize{
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+	
+	*, html, body {
+		margin:0;
+		padding:0;
+	}
+
+	#canvas-container{
+		position: relative;
+		margin-right: auto;
+		margin-left: auto;
+		margin-top: 2rem;
+		margin-bottom: auto;
+		width: 70%;
+		background-color: transparent;
+
+	}
+
+	
+
+	#title{
+		font-size: 1.5rem;
+		color: rgba(143,195,31, 1);
+		font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+		font-weight: 300;
+		margin-bottom: 0.5rem;
+
+	}
+
+	#replay-button{
+		position: absolute;
+		top: 0px;
+		right: 0px;
+		z-index: 1000;
+		color: white;
+		background-color: rgba(0,0,0,0.5);
+		border: none;
+		width: 8rem;
+		height: 2rem;
+
+		font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+		font-weight: 300;
+
+		transition: all 0.15s ease-out;
+	}
+
+	#replay-button:hover{
+		background-color: rgba(0,0,0,0.6);
+	}
+
+	#replay-button:active{
+		background-color: rgba(0,0,0,0.4);
+	}
+
+
+</style>
+
+<script type="text/javascript">
+
+	//-------------------------------------------------------------------------
+	// GLOBAL VARIABLES
+	//-------------------------------------------------------------------------
+	var keyDown = {};				// a list of keys currently pressed
+	var mouseButtonDown = 0;		// button down (1=left, 2=middle, 3=right, 0=none)
+	var mouseX = 0, mouseY = 0;		// the current position of the mouse
+	
+	var canvas;						// the element that holds the gl context
+    var gl; 						// the WebGL context
+	var squareVertexPositionBuffer;	// buffer for vertex positions (what we draw)
+	var shaderProgram;				// The shader program handle
+	
+	var logToConsole = false;       // Whether log messages should go to console
+
+	var animationOn = false;        // Whether we are currently animating
+	var frameNum = 0;               // The animation frame number
+
+	//-------------------------------------------------------------------------
+	// LOAD THE CONTENTS OF A URL AS A STRING
+	// Chrome and IE require that loading files go through a web server for
+	// security reasons, so you can't just open the file in those.  It works
+	// under Firefox and Safari, however.
+	//-------------------------------------------------------------------------
+	function loadURL(url)
+	{
+		var httpRequest = new XMLHttpRequest();
+		httpRequest.open("GET", url, false);
+		//log("loading '" + url + "' ...");
+		httpRequest.send(null);
+		//log("done.");
+		return httpRequest.responseText;
+	}
+	
+	//-------------------------------------------------------------------------
+	// INITIALIZE THE OPENGL CONTEXT
+	//-------------------------------------------------------------------------
+    function initGL(canvas) 
+	{
+        try {
+            gl = canvas.getContext("experimental-webgl");
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } catch (e) {
+        }
+        if (!gl) {
+            log("ERROR: Could not initialise WebGL.");
+        }
+    }
+	
+	//-------------------------------------------------------------------------
+	// LOAD A SHADER FROM A URL
+	//-------------------------------------------------------------------------
+	function getShader(gl, url, type) 
+	{
+		var shaderSource = loadURL(url);
+		var shader = gl.createShader(type);
+		gl.shaderSource(shader, shaderSource);
+        gl.compileShader(shader);
+		
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            log(gl.getShaderInfoLog(shader));
+            return null;
+        }
+
+        return shader;
+    }
+
+    //-------------------------------------------------------------------------
+	// INITIALIZE THE SHADER PROGRAM
+	//-------------------------------------------------------------------------
+    function initShaders() 
+	{
+		//printMessage("", "console", false);
+		var vsURL = "glsl/basicVertexShader.vs"; //document.getElementById("vertexShader").value;
+		var fsURL = "glsl/run.fs"; //document.getElementById("fragmentShader").value;
+		
+		var vertexShader = getShader(gl, vsURL, gl.VERTEX_SHADER);
+        var fragmentShader = getShader(gl, fsURL, gl.FRAGMENT_SHADER);
+
+        shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            log("ERROR: Could not link shader program.");
+        }
+
+        gl.useProgram(shaderProgram);
+
+        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    }
+	
+	//-------------------------------------------------------------------------
+	// INITIALIZE THE VERTEX BUFFER AS SINGLE SQUARE
+	//-------------------------------------------------------------------------
+    function initVertexBuffer() 
+	{
+        squareVertexPositionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+        vertices = [
+             1.0,  1.0,  0.0,
+            -1.0,  1.0,  0.0,
+             1.0, -1.0,  0.0,
+            -1.0, -1.0,  0.0
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        squareVertexPositionBuffer.itemSize = 3;
+        squareVertexPositionBuffer.numItems = 4;
+    }
+	
+	//-------------------------------------------------------------------------
+	// SET UNIFORM VARIABLES IN THE SHADER
+	//-------------------------------------------------------------------------
+    function setUniforms() 
+	{
+		var loc = gl.getUniformLocation(shaderProgram, "windowWidth");
+		gl.uniform1f(loc, gl.viewportWidth);
+		
+		loc = gl.getUniformLocation(shaderProgram, "windowHeight");
+		gl.uniform1f(loc, gl.viewportHeight);
+		
+		loc = gl.getUniformLocation(shaderProgram, "frameNum");
+		gl.uniform1f(loc, frameNum);
+    }
+
+	//-------------------------------------------------------------------------
+	// DRAW THE SCENE (single quad over the whole screen)
+	//-------------------------------------------------------------------------
+    function drawScene() 
+	{
+		var viewportWidth = gl.viewportWidth;
+		var viewportHeight = gl.viewportHeight;
+	
+        gl.viewport(0, 0, viewportWidth, viewportHeight);
+        //gl.clear(gl.COLOR_BUFFER_BIT);
+		
+		
+		setUniforms();
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+    }
+
+	//-------------------------------------------------------------------------
+	// START UP THE PROGRAM
+	//-------------------------------------------------------------------------
+    function webGLStart() 
+	{
+        canvas = document.getElementById("myCanvas");
+        initGL(canvas);
+        initShaders();
+        initVertexBuffer();
+
+        gl.clearColor(0.0, 0.5, 0.5, 1.0);
+		gl.clear(gl.COLOR_BUFFER_BIT);
+        //gl.enable(gl.DEPTH_TEST);
+
+        //frameNum = 0;
+        //document.getElementById("frameNumLabel").innerHTML = "frame: " + frameNum;
+        animationOn = false;
+        drawScene();
+		
+		//full screen
+        fullSize();
+		
+		toggleAnimate()
+    }
+
+    //-------------------------------------------------------------------------
+	// ANIMATION STUFF
+	//-------------------------------------------------------------------------
+    function toggleAnimate() 
+	{
+		animationOn = !animationOn;
+        run();
+    }
+    function run()
+    {
+    	if(frameNum > 1500){
+    		document.getElementById("replay-button").style.display = 'inline';
+    		document.getElementById("replay-button").style.opacity = "1";
+    	}else{
+    		document.getElementById("replay-button").style.display = 'none';
+    		document.getElementById("replay-button").style.opacity = "0";
+    	}
+
+    	if (animationOn == true) {
+    		requestAnimationFrame(function() { run(); });
+    		frameNum++;
+    		//document.getElementById("frameNumLabel").innerHTML = "frame: " + frameNum;
+    		//console.log("#" + frameNum);
+    	}
+    	drawScene();
+    }
+	
+	// YT Addition
+	function fullSize(){
+		console.log("Full");
+		var myCanvas = document.getElementById("myCanvas");
+		myCanvas.className += " fullSize";
+	}
+
+	function resetTimer(){
+		frameNum = 0;
+	}
+	
+</script>
+
+</head>
+
+<body onload="webGLStart();" style="border: none; margin:0; padding:0;">
+
+	
+	<div id="canvas-container">
+		<div id="title">OpenGL Shading Language: RUN</div>
+		<button id="replay-button" onclick="resetTimer()"> REPLAY </button>
+	    <canvas id="myCanvas" style="border: none; margin:0; padding:0; display:block;"  width="900" height="600"
+			oncontextmenu="return false;"/>
+	</div>
+</body>
+
+</html>

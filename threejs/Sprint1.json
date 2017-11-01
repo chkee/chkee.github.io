@@ -1,0 +1,102 @@
+{ 
+	"DESCRIPTION": "cube, sphere, cone objects",
+	"type": "node",
+	"name": "rootNode",
+
+	"children":
+	[
+		{
+			"DESCRIPTION": "camera looking at origin from above Z axis and slightly to the right",
+			"type": "camera",
+			"name": "camera1",
+			"eye": [3, 7, 20],
+			"center": [0, 0, 0],
+			"vup": [0, 1, 0],
+			"fov": 30
+		},
+		{
+			"DESCRIPTION": "white directional light shining on right top",
+			"type": "directionalLight",
+			"name": "light1",
+			"color": [1, 1, 1],
+			"position": [1, 1, 1]
+		},
+        {
+			"DESCRIPTION": "white directional light shining on middle left",
+			"type": "directionalLight",
+			"name": "light2",
+			"color": [1, 1, 1],
+			"position": [-0.5, 0.2, -1.5]
+		},
+		{
+			"DESCRIPTION": "green cube to bottom of origin",
+			"type": "mesh",
+			"name": "myCube",
+			"translate": [0, -2, 0],
+			"geometry": "cube",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "cubeMat",
+				"diffuseColor": [0, 0.55, 0.55],
+				"specularColor": [1, 1, 1]
+			}
+		},
+		{
+			"DESCRIPTION": "red sphere at origin, on top of the cube",
+			"type": "mesh",
+			"name": "mySphere",
+			"translate": [0, -0.3, 0],
+			"geometry": "sphere",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "sphereMat",
+				"diffuseColor": [1, 0.25, 0.25],
+				"specularColor": [1, 1, 1]
+			}
+		},
+		{
+			"DESCRIPTION": "blue cone at the origin, on top of the sphere",
+			"type": "mesh",
+			"name": "myCone",
+			"translate": [0, 1.7, 0],
+			"geometry": "cone",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [0.35, 0.15, 0.85],
+				"specularColor": [0.1, 0.6, 0.1]
+			}
+		},
+        {
+			"DESCRIPTION": "yellow torus at the origin, on top of the cone",
+			"type": "mesh",
+			"name": "myTorus",
+			"translate": [0, 4, 0],
+			"geometry": "torus",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [1, 1, 0.5],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+			"DESCRIPTION": "blue plane to bottom of origin",
+			"type": "mesh",
+			"name": "myPlane",
+			"translate": [0, -4, 0],
+			"geometry": "plane",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [0, 0.65, 0.9],
+				"specularColor": [1, 1, 1]
+			}
+		}
+	]
+}

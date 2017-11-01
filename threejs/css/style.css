@@ -1,0 +1,263 @@
+body{
+	font-family: sans-serif;	/* Tells what font to use by default */
+	background-color: #000;		/* Black background */		
+	color: #fff;				/* White foreground */
+	margin: 0px; 				/* How much space to draw around everything */
+	overflow: hidden;			/* Hides the scroll bar */
+}
+
+/* top center*/
+#top{
+	color: #fff;				/* White foreground for these #info elements */
+	/* Unspecified background is transparent */
+	opacity: 0.8;				/* opacity of element */
+	position: absolute;			/* #info elements do not flow with document */				
+	top: 5px;					/* A margin of 10 pixels at the top */
+	width: 100%;				/* #info elements span the whole window width */
+	text-align: center;			/* Text alignment is left */
+	z-index: 100;				/* High draw order (drawn on top) */
+	display:block;				/* Display elements should be stacked vertically */
+
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* top right */
+#top-right{
+	color: #fff;				/* White foreground for these #info elements */
+	/* Unspecified background is transparent */
+	opacity: 0.8;				/* opacity of element */
+	position:absolute;			/* #info elements do not flow with document */				
+	top:5px;      				/* A margin of 10 pixels */
+	right:5px;
+	margin-right: 3mm;
+	font-size: 8pt;
+	z-index: 100;				/* High draw order (drawn on top) */
+	display:block;				/* Display elements should be stacked vertically */
+
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+
+/* top left */
+#top-left{
+	color: #fff;				/* White foreground for these #info elements */
+	/* Unspecified background is transparent */
+	opacity: 0.8;				/* opacity of element */
+	position: absolute;			/* #info elements do not flow with document */				
+	left: 5px;					/* left margin */
+	top: 5px;					/* left margin */
+	text-align: left;			/* Text alignment */
+	z-index: 100;				/* High draw order (drawn on top) */
+	display:block;				/* Display elements should be stacked vertically */
+
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* center */
+#center{
+	position: absolute;
+	text-align: center;
+	width: 500px;
+	height: 500px;
+	top: 50%;
+	left: 50%;
+	margin-left: -250px; /* margin is -0.5 * dimension */
+	margin-top: -25px; 
+
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* bottom right */
+#bottom-right{
+	color: #fff;				/* White foreground for these #info elements */
+	/* Unspecified background is transparent */
+	opacity: 0.8;				/* opacity of element */
+	position:absolute;			/* #info elements do not flow with document */				
+	bottom: 5px;				/* A margin of 10 pixels */
+	right:5px;
+	margin-right: 3mm;
+	font-size: 8pt;
+	z-index: 100;				/* High draw order (drawn on top) */
+	display:block;				/* Display elements should be stacked vertically */
+}
+
+/* Bottom left*/
+#bottom-left{
+	color: #fff;				/* White foreground for these #info elements */
+	/* Unspecified background is transparent */
+	opacity: 0.8;				/* opacity of element */
+	position: absolute;			/* #info elements do not flow with document */				
+	bottom: 5px;				/* A margin of 10 pixels */
+	width: 100%;				/* #info elements span the whole window width */
+	text-align: left;			/* Text alignment */
+	margin-left: 3mm;
+	font-size: 8pt;
+	z-index: 100;				/* High draw order (drawn on top) */
+	display:block;				/* Display elements should be stacked vertically */
+
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.center-text-1{
+	display: inline-block;
+	font-family: 'Arial';
+	font-size: 35px;
+	/*<!-- line-height: 1px; -->
+	<!-- letter-spacing: 1px; -->*/
+	color: rgba(76,76,76,0.8);
+	position: inherit;
+	text-align: center;
+	opacity: 1;
+}
+		
+.center-text-2{
+	font-family: 'Arial';
+	font-size: 12px;
+	line-height: 10px;
+	letter-spacing: 1px;
+	color: rgba(76,76,76,0.8);
+	width: 280px;
+	/*<!-- left: 30px; -->
+	<!-- text-align: right; -->*/
+	opacity: 1;
+	position: relative;
+	display: inline-block;
+	white-space: pre;
+	text-decoration: line-through;
+}
+
+.center-text-3{
+	font-family: 'Arial';
+	font-size: 12px;
+	line-height: 10px;
+	letter-spacing: 1px;
+	color: rgba(76,76,76,0.8);
+	/*right: -10;*/
+	left: 0px;
+	width: 30px;
+	text-align: right;
+	opacity: 1;
+	position: relative;
+	white-space: pre;
+	display: inline-block;
+}
+
+.holder{
+	border-radius: 2px;
+	position: relative;
+	display: inline-block;
+}
+
+.holder:hover .shape{
+	stroke-width: 2.5px;
+	stroke-dashoffset: 30;
+	stroke-dasharray: 460;
+}
+
+/* SVG button setting */
+.svg-wrapper{
+	border-radius: 2px;
+	position: relative;
+	top: 50%;
+	margin: 0 auto;
+	width: 120px;  
+	height: 30px;
+}
+
+.shape{
+	border-radius: 2px;
+	stroke-linecap: round;
+	stroke-dasharray: 50 200;
+	stroke-dashoffset: -186.5;
+	stroke-width: 8px;
+	fill: black;
+	opacity: 0.4;
+	stroke: rgba(143,195,31, 0.7); /*#19f6e8;*/
+	border-bottom: 5px solid black;
+	transition: stroke-width 1s, stroke-dashoffset 1s, stroke-dasharray 1s;
+}
+
+.svg-text{
+	border-radius: 2px;
+	font-family: 'Arial';
+	font-size: 14px;
+	line-height: 32px;
+	letter-spacing: 2px;
+	color: #fff;
+	position: absolute;
+	width: 120px;
+	top: 0;
+	text-align: center;
+}
+
+.svg-wrapper:hover .shape{
+	stroke-width: 2px;
+	stroke-dashoffset: 30;
+	stroke-dasharray: 460;
+}
+
+#mute-shape{
+	border-radius: 2px;
+	display: inline-block;
+	width: 70px;
+	height: 30px;
+	fill: red;
+	opacity: 0.4;
+	background-color: black;
+	transition-duration: 0.2s;
+}
+
+#mute-shape:active{
+	opacity: 0.3;
+}
+
+#mute-text{
+	font-family: 'Arial';
+	font-size: 8px;
+	line-height: 10px;
+	letter-spacing: 1px;
+	color: #fff;
+	position: absolute;
+	top: 18%;
+	width: 70px;
+	text-align: center;
+	opacity: 1;
+	
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

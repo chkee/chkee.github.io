@@ -1,0 +1,276 @@
+{ 
+	"DESCRIPTION": "cube, sphere, cone objects",
+	"type": "node",
+	"name": "rootNode",
+    "scriptFiles": ["scene.js"],
+    "userData":
+    {
+        "scripts": ["sceneControl"]
+    },
+
+	"children":
+	[
+		{
+			"DESCRIPTION": "Camera looking at origin from above Z axis and slightly to the right",
+			"type": "camera",
+			"name": "camera1",
+			"eye": [15, 7, 15],
+			"center": [0, 0, 0],
+			"vup": [0, 1, 0],
+			"fov": 30
+		},
+        {
+			"DESCRIPTION": "White directional light shining on middle left",
+			"type": "directionalLight",
+			"name": "light2",
+			"color": [1, 1, 1],
+			"position": [-0.5, 0.2, -1.5]
+		},
+        {
+			"DESCRIPTION": "Ambient light",
+			"type": "ambientLight",
+			"name": "light2",
+			"color": [0.5, 0.5, 0.5],
+			"position": [1, 0, 1]
+		},
+        
+        {
+			"DESCRIPTION": "Yellow Point light shining on right back",
+			"type": "pointLight",
+			"name": "light1",
+			"color": [1, 0.4, 0.4],
+			"position": [10, 20, 10]
+		},
+		{
+			"DESCRIPTION": "Ground",
+			"type": "mesh",
+			"name": "myPlane",
+			"translate": [0, -1, 0],
+            "rotation": [1.5,0,0, 1],
+            "scale":[2,2,2],
+			"geometry": "plane",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [0.18, 0.5, 0.35],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+			"DESCRIPTION": "Wall1",
+			"type": "mesh",
+			"name": "myPlane",
+			"translate": [0, 0, -12],
+            "rotation": [0,0,1.5, 1],
+            "scale":[2,2,2],
+			"geometry": "plane",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [0.5, 0.9, 0.98],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+			"DESCRIPTION": "Wall2",
+			"type": "mesh",
+			"name": "myPlane",
+			"translate": [-11, 0, 0],
+            "rotation": [0,1.5,0, 1],
+            "scale":[2,2,2],
+			"geometry": "plane",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [0.5, 0.9, 0.98],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+            "DESCRIPTION": "sprite 1",
+            "type": "sprite",
+            "name": "Sprite 1",
+            "translate": [-2.5, 1, 0],
+            "dimension": [3,3,3],
+            "scale": [3,3,3],
+            "geometry": "sprite",
+            "material":{
+                "type": "MeshPhongMaterial",
+                "name": "cubeMat",
+                "spriteFile": "threejs/textures/images/pkm17.png",
+                "diffuseColor": [1, 1, 1],
+				"specularColor": [1, 1, 1]
+            }
+        },
+        {
+            "DESCRIPTION": "sprite 1",
+            "type": "sprite",
+            "name": "Sprite 1",
+            "translate": [6.5, 1, -2],
+            "dimension": [3,3,3],
+            "scale": [3,3,3],
+            "geometry": "sprite",
+            "material":{
+                "type": "MeshPhongMaterial",
+                "name": "cubeMat",
+                "spriteFile": "threejs/textures/images/pkm21.png",
+                "diffuseColor": [1, 1, 1],
+				"specularColor": [1, 1, 1]
+            }
+        },
+        {
+			"DESCRIPTION": "Cube with sprite",
+			"type": "mesh",
+			"name": "myCube",
+            "faceCamera": "true",
+			"translate": [0, 0, 4],
+			"geometry": "spriteCube",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "cubeMat",
+                "texture": "threejs/textures/images/megamanP.png",
+				"diffuseColor": [0, 0.55, 0.55],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+			"DESCRIPTION": "Cube with sprite",
+			"type": "mesh",
+			"name": "myCube",
+            "faceCamera": "false",
+			"translate": [-2, 0, -4],
+			"geometry": "spriteCube",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "cubeMat",
+                "texture": "threejs/textures/images/pkm111.png",
+				"diffuseColor": [0, 0.55, 0.55],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+            "DESCRIPTION": "Tree",
+			"type": "node",
+			"name": "tree",
+			"rotate": [0, 1, 0, 0.5],
+            
+			"children": 
+			[
+				{
+					"type": "mesh",
+					"name": "cylinder1",
+					"translate": [5, 0, 0],
+					"scale": [0.5, 0.5, 0.5],
+					"geometry": "cylinder",
+					"material": 
+					{
+						"type": "meshPhongMaterial",
+						"name": "cylinder1",
+						"diffuseColor": [0.75, 0.22, 0.1],
+						"specularColor": [0.02, 0.02, 0.02],
+                        "scale": [1, 1, 2, 32]
+					}
+				},
+				{
+                    "type": "mesh",
+                    "name": "cone1",
+                    "scale": [1.5,1.5,1.5],
+                    "translate": [5, 2, 0],
+                    "geometry": "cone",
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "torus1",
+                        "diffuseColor": [0.3, 0.7, 0.4],
+                        "specularColor": [0.02, 0.02, 0.02]
+                    }
+                },
+				{
+                    "type": "mesh",
+                    "name": "cone1",
+                    "scale": [1.25,1.25,1.25],
+                    "translate": [5, 3, 0],
+                    "geometry": "cone",
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "torus1",
+                        "diffuseColor": [0.3, 0.7, 0.4],
+                        "specularColor": [0.02, 0.02, 0.02]
+                    }
+                },
+				{
+                    "type": "mesh",
+                    "name": "cone1",
+                    "scale": [1,1,1],
+                    "translate": [5, 4, 0],
+                    "geometry": "cone",
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "torus1",
+                        "diffuseColor": [0.3, 0.7, 0.4],
+                        "specularColor": [0.02, 0.02, 0.02]
+                    }
+                }
+            ]
+			
+        },
+        {
+            "DESCRIPTION": "Sun",
+			"type": "node",
+            "isRoot":"true",
+			"name": "sun",
+			"rotate": [0, 1, 0, 0.5],
+            
+			"children": 
+			[
+				{
+					"type": "mesh",
+					"name": "cylinder1",
+					"translate": [-2, 4, 8],
+					"scale": [0.5, 0.5, 0.5],
+					"geometry": "sphere",
+					"material": 
+					{
+						"type": "meshPhongMaterial",
+						"name": "cylinder1",
+						"diffuseColor": [0.75, 0.75, 0.4],
+						"specularColor": [0.02, 0.02, 0.02],
+                        "scale": [1, 1, 2, 32]
+					}
+				},
+				{
+                    "type": "sprite",
+                     "name": "Sprite 1",
+                    "translate": [-2, 4, 8],
+                    "dimension": [3,3,3],
+                    "scale": [5,5,5],
+                    "geometry": "sprite",
+                    "material":{
+                        "type": "MeshPhongMaterial",
+                        "name": "cubeMat",
+                        "spriteFile": "threejs/textures/images/godray1.png",
+                        "diffuseColor": [1, 1, 1],
+                        "specularColor": [1, 1, 1]
+                    }
+                },
+        
+                {
+                    "DESCRIPTION": "Yellow Point light shining on right back",
+                    "type": "pointLight",
+                    "name": "light1",
+                    "color": [0.5, 0.5, 0.1],
+                    "position": [-2, 4, 8]
+                }
+            ]
+			
+        }
+		
+    ]	
+}

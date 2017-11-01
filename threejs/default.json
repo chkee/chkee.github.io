@@ -1,0 +1,74 @@
+{ 
+	"type": "node",
+	"name": "rootNode",
+	"scriptFiles": [ "threejs/scripts/default.js" ],
+	"whiteBackground": "false",
+	"wasdEnabled": "true",
+	"mouseEnabled": "true",
+	"modelSelectionEnabled": "true",
+
+	"children":
+	[
+		{
+			"DESCRIPTION": "Camera",
+			"type": "camera",
+			"name": "camera1",
+			"eye": [0, 15, 80],
+			"center": [7, 1, 0],
+			"vup": [0, 1, 0],
+			"fov": 20
+		},
+
+		{
+			"DESCRIPTION": "Light",
+			"type": "ambientLight",
+			"name": "ablight",
+			"color": [0.25, 0.3, 0.72]
+		},
+		{
+			"type": "directionalLight",
+			"name": "light1",
+			"color": [0.56, 0.76, 0.12],
+			"position": [0.7, 0.75, 1.0]
+		},
+
+
+		{
+			"DESCRIPTION": " ======== ROTATING PYRAMID ======== ",
+			"type": "node",
+			"name": "pyramid",
+			"translate": [5, 0, 0],
+
+			"userData": 
+			{ 
+				"scripts": ["rotateJump"],
+				"rotationSpeed": 0.05
+			},
+
+			"children": 
+			[
+
+				{
+					"DESCRIPTION": "Initial spinning pyramid",
+					"type": "mesh",
+					"name": "pyramid",
+					"translate": [0, 1, 0],
+					"scale": [0.7,0.7,0.7],
+					"geometry": "pyramid",
+					"material": 
+					{
+						"type": "MeshPhongMaterial",
+						"name": "coneMat",
+						"diffuseColor": [0.56, 0.76, 0.12],
+						"specularColor": [0.1, 0.6, 0.1]
+					}
+
+
+
+				}
+			]
+			
+		}
+
+	]
+}

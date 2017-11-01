@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Three.js Demo</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="threejs/css/style.css">
+
+	<!-- Include the main three.js file and the OBJLoader.js file -->
+	<script src="threejs/build/three.min.js"></script>
+	<script src="js/loaders/OBJLoader.js"></script>
+
+	<!-- Post processing -->
+    <script src="threejs/js/shaders/RGBShiftShader.js"></script>
+	<script src="threejs/js/shaders/CopyShader.js"></script>
+    <script src="threejs/js/postprocessing/EffectComposer.js"></script>
+    <script src="threejs/js/postprocessing/RenderPass.js"></script>
+    <script src="threejs/js/postprocessing/MaskPass.js"></script>
+    <script src="threejs/js/postprocessing/ShaderPass.js"></script>
+</head>
+
+<body oncontextmenu="return false;">
+
+	<div id="top"></div>
+    <div id ="top-right"></div>
+    <div id="bottom-right"></div>
+    <div id="top-left">
+	<pre id="preID"></pre>
+	</div>
+
+	<!-- Bottom left buttons -->
+	<div id="bottom-left" >
+	
+		<div class="holder">
+    		<div id="mute-shape" height="30" width="70" onclick ="mute()">
+				<div id="mute-text" >
+					MUTE/<br/>
+					UNMUTE
+				</div>
+			</div>
+	   </div>
+		
+        <div class="holder" onclick = 'loadFile("threejs/Sprint5.json")'>
+    	  <svg class="svg-wrapper" height="30" width="120" xmlns="http://www.w3.org/2000/svg">
+    		<rect class="shape" height="30" width="120" />
+    		<div class="svg-text" >
+                DEMO 1 
+            </div>
+    	  </svg>
+	   </div>
+	  
+		<div class="holder" style="border-radius: 2px;" onclick = 'loadFile("threejs/Sprint4a.json")'>
+			<svg class="svg-wrapper"  style="border-radius: 2px;" height="30" width="120" xmlns="http://www.w3.org/2000/svg">
+				<rect class="shape"  style="border-radius: 2px;" height="30" width="120"/>
+				<div class="svg-text">
+					DEMO 2  
+				</div>
+			</svg>
+        </div>
+		
+		<div class="holder" onclick = 'loadFile("threejs/Sprint4b.json")'>
+			<svg class="svg-wrapper" height="30" width="120" xmlns="http://www.w3.org/2000/svg">
+				<rect class="shape" height="30" width="120"/>
+				<div class="svg-text">
+					DEMO 3  
+				</div>
+			</svg>
+        </div>
+
+		<!-- <input type="text" placeholder="file name" 
+               id="fileName" size="35"
+			value="Sprint5.json"></input>
+    
+		<button type="button" 
+			onclick="fileURL = getElementById('fileName').value;
+				loadFile(fileURL)">load</button> -->
+	</div>
+    
+    <!-- Initial screen -->
+    <div id="center">
+		<div id="default-text-1"> 
+			<div class="center-text-1"> Three.js DEMO </div>
+		</div>
+		
+		<div id="default-text-2" style="text-align: right; margin-right: 155px;"> 
+			<div class="center-text-2">                           </div>
+			<div class="center-text-3"> Erik Kee </div>
+		<div> 
+    </div>
+
+    <!-- The actual Javascript code -->
+    <script src="threejs/three.js"></script>
+
+    </body>
+</html>

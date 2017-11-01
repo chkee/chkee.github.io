@@ -1,0 +1,241 @@
+{
+    "type": "node",
+    "name": "rootNode",
+    "scriptFiles": [ "threejs/scripts/sprint5.js" ],
+    "backgroundMusic": [ "threejs/audio/VDBoss.mp3" ],
+	"wasdEnabled": "false",
+	"mouseEnabled": "false",
+	"modelSelectionEnabled": "false",
+    "children":
+    [
+        {
+            "DESCRIPTION": "Camera",
+            "type": "camera",
+            "name": "camera1",
+            "eye": [0, 0, 80],
+            "center": [0, 0, 0],
+            "vup": [0, 1, 0],
+            "fov": 20
+        },
+
+        {
+            "DESCRIPTION": "Light",
+            "type": "ambientLight",
+            "name": "ablight",
+            "color": [0.25, 0.3, 0.72]
+        },
+        {
+            "type": "directionalLight",
+            "name": "light1",
+            "color": [0.5, 0.5, 0.2],
+            "position": [0.7, 0.75, 1.0]
+        },
+        {
+            "DESCRIPTION": "Ground",
+            "type": "mesh",
+            "name": "ground",
+            "scale": [100, 100, 100],
+            "translate": [0, -50, 0],
+            "rotation":[0,1.5,0,0],
+            "geometry": "plane",
+            "material":
+            {
+                "type": "meshPhongMaterial",
+                "name": "sm2",
+                "diffuseColor": [0.39, 0.86, 0.7],
+                "specularColor": [0.01, 0.01, 0.01],
+                "shininess": 10
+            }
+        },{
+            "DESCRIPTION": "Ground",
+            "type": "mesh",
+            "name": "ground",
+            "scale": [100, 100, 100],
+            "translate": [0, -7.7, 0],
+            "geometry": "plane",
+            "material":
+            {
+                "type": "meshPhongMaterial",
+                "name": "sm2",
+                "diffuseColor": [0.0, 0.78, 0.6],
+                "specularColor": [0.01, 0.01, 0.01],
+                "shininess": 10
+            }
+        },
+
+
+
+        {
+            "DESCRIPTION": "========== Player ==========",
+            "type": "node",
+            "name": "player",
+            "scale": [0.75, 0.75, 0.75],
+            "translate": [0, 0, 0],
+            "userData":
+            {
+                "scripts": ["playerScript"]
+            },
+
+            "children":
+            [
+                {
+                    "type": "mesh",
+                    "name": "player",
+                    "type": "sprite",
+                    "scale": [3, 3, 3],
+                    "translate": [0, 0, 0],
+                    "dimension": [3,3,3],
+                    "geometry": "sprite",
+                    "material":{
+                        "type": "MeshPhongMaterial",
+                        "name": "cubeMat",
+                        "spriteFile": "threejs/textures/images/megamanP.png",
+                        "diffuseColor": [1, 1, 1],
+                        "specularColor": [1, 1, 1]
+                    }
+                }
+            ]
+        },
+        {
+            "DESCRIPTION": "========== NPC Boss ==========",
+            "type": "node",
+            "name": "player",
+            "scale": [0.75, 0.75, 0.75],
+            "translate": [0, 0, 0],
+            "userData":
+            {
+                "scripts": ["npcShootMovement"]
+            },
+
+            "children":
+            [
+                {
+                    "type": "mesh",
+                    "name": "player",
+                    "type": "sprite",
+                    "scale": [7, 7, 7],
+                    "translate": [18, -4, 0],
+                    "dimension": [3,3,3],
+                    "geometry": "sprite",
+                    "material":{
+                        "type": "MeshPhongMaterial",
+                        "name": "cubeMat",
+                        "spriteFile": "threejs/textures/images/pkm20.png",
+                        "diffuseColor": [1, 1, 1],
+                        "specularColor": [1, 1, 1]
+                    }
+                }
+            ]
+        },
+
+
+        {
+            "DESCRIPTION": "========== NPC PROJECTILE ==========",
+            "type": "node",
+            "name": "npc",
+            "scale": [1, 1, 1],
+            "translate": [5, 0, 0],
+            "userData":
+            {
+                "scripts": ["npcMovement"]
+            },
+
+            "children":
+             [
+                {
+                    "type": "mesh",
+                    "name": "Rectangle projectile",
+                    "scale": [1.5, 3, 1.5],
+                    "translate": [20, 20, 0],
+                    "geometry": "cube",
+                    "touched": false,
+                    "colliding": false,
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "sm2",
+                        "diffuseColor": [0.86, 0.39, 0.44],
+                        "specularColor": [0.01, 0.01, 0.01]
+                    }
+
+                },
+                 {
+                    "type": "mesh",
+                    "name": "Cube Projectile",
+                    "scale": [1.5, 1.5, 1.5],
+                    "translate": [-20, -20, 0],
+                    "geometry": "cube",
+                     "touched": false,
+                     "colliding": false,
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "mp",
+                        "diffuseColor": [1, 1, 1],
+                        "specularColor": [0.01, 0.01, 0.01]
+                    }
+
+                },
+                 {
+                    "type": "mesh",
+                    "name": "Sphere Projectile",
+                    "scale": [1.5, 1.5, 1.5],
+                    "translate": [20, 20, 0],
+                    "geometry": "sphere",
+                    "touched": false,
+                    "colliding": false,
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "mp",
+                        "diffuseColor": [0.86, 0.39, 0.44],
+                        "specularColor": [0.01, 0.01, 0.01]
+                    }
+
+                },
+                 {
+                    "type": "mesh",
+                    "name": "Cylinder Projectile",
+                    "scale": [1.5, 1.5, 1.5],
+                    "translate": [20, 20, 0],
+                    "geometry": "cylinder",
+                    "touched": false,
+                    "colliding": false,
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "mp",
+                        "diffuseColor": [0.86, 0.39, 0.44],
+                        "specularColor": [0.01, 0.01, 0.01]
+                    }
+
+                },
+                 {
+                    "type": "mesh",
+                    "name": "Torus Projectile",
+                    "scale": [1.5, 1.5, 1.5],
+                    "translate": [20, 20, 0],
+                    "geometry": "torus",
+                    "touched": false,
+                    "colliding": false,
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "mp",
+                        "diffuseColor": [0.86, 0.39, 0.44],
+                        "specularColor": [0.01, 0.01, 0.01]
+                    }
+                },
+                 {
+                    "DESCRIPTION": "========== NOT A PROJECTILE ==========",
+                    "DESCRIPTION 2": "For glowing effect of a projectile",
+                    "DESCRIPTION 3": "Must be placed in the last array for it to work", 
+                    "type": "pointLight",    
+                    "name": "light1",
+                    "color": [0.3, 0.3, 0.7],
+                    "position": [-2, 4, 8]
+                 }
+             ]
+        }
+    ]
+}

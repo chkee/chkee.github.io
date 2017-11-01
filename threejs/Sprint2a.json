@@ -1,0 +1,196 @@
+{ 
+	"DESCRIPTION": "cube, sphere, cone objects",
+	"type": "node",
+	"name": "rootNode",
+
+	"children":
+	[
+		{
+			"DESCRIPTION": "Camera looking at origin from above Z axis and slightly to the right",
+			"type": "camera",
+			"name": "camera1",
+			"eye": [3, 7, 20],
+			"center": [0, 0, 0],
+			"vup": [0, 1, 0],
+			"fov": 30
+		},
+		{
+			"DESCRIPTION": "White directional light shining on right top",
+			"type": "directionalLight",
+			"name": "light1",
+			"color": [1, 1, 1],
+			"position": [1, 1, 1]
+		},
+        {
+			"DESCRIPTION": "White directional light shining on middle left",
+			"type": "directionalLight",
+			"name": "light2",
+			"color": [1, 1, 1],
+			"position": [-0.5, 0.2, -1.5]
+		},
+        {
+			"DESCRIPTION": "Yellow Point light shining on right back",
+			"type": "pointLight",
+			"name": "light1",
+			"color": [1, 0.2, 0.2],
+			"position": [10, 20, 10]
+		},
+		{
+			"DESCRIPTION": "Red ambient light shining on left front",
+			"type": "ambientLight",
+			"name": "light2",
+			"color": [0.5, 0.2, 0.2],
+			"position": [-10, 1, -10]
+		},
+		{
+			"DESCRIPTION": "White directional light shining in middle up high",
+			"type": "directionalLight",
+			"name": "light3",
+			"color": [1, 1, 1],
+			"position": [10, 10, 0]
+		},
+		{
+			"DESCRIPTION": "Green cube to bottom of origin",
+			"type": "mesh",
+			"name": "myCube",
+			"translate": [10, -2, 0],
+			"geometry": "cube",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "cubeMat",
+				"diffuseColor": [0, 0.55, 0.55],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+			"DESCRIPTION": "Cube with sprite",
+			"type": "mesh",
+			"name": "myCube",
+            "faceCamera": "true",
+			"translate": [0, -2, 0],
+			"geometry": "spriteCube",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "cubeMat",
+                "texture": "threejs/textures/images/megamanP.png",
+				"diffuseColor": [0, 0.55, 0.55],
+				"specularColor": [1, 1, 1]
+			}
+		},
+		{
+			"DESCRIPTION": "Red sphere at origin, on top of the cube",
+			"type": "mesh",
+			"name": "mySphere",
+			"translate": [0, 30, 0],
+			"geometry": "sphere",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "sphereMat",
+				"diffuseColor": [1, 0.25, 0.25],
+				"specularColor": [1, 1, 1]
+			}
+		},
+		{
+			"DESCRIPTION": "Blue cone at the origin, on top of the sphere",
+			"type": "mesh",
+			"name": "myCone",
+			"translate": [0, 1.7, 0],
+			"geometry": "cone",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [0.35, 0.15, 0.85],
+				"specularColor": [0.1, 0.6, 0.1]
+			}
+		},
+        {
+			"DESCRIPTION": "Yellow torus at the origin, on top of the cone",
+			"type": "mesh",
+			"name": "myTorus",
+			"translate": [0, 4, 0],
+			"geometry": "torus",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [1, 1, 0.5],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+			"DESCRIPTION": "Blue plane to bottom of origin",
+			"type": "mesh",
+			"name": "myPlane",
+			"translate": [0, -4, 0],
+            "rotation":[1.5, 0, 0, 1],
+			"geometry": "plane",
+			"material": 
+			{
+				"type": "MeshPhongMaterial",
+				"name": "coneMat",
+				"diffuseColor": [0, 0.65, 0.9],
+				"specularColor": [1, 1, 1]
+			}
+		},
+        {
+            "DESCRIPTION": "sprite 1",
+            "type": "sprite",
+            "name": "Sprite 1",
+            "translate": [-2.5, 1, 0],
+            "dimension": [3,3,3],
+            "scale": [3,3,3],
+            "geometry": "sprite",
+            "material":{
+                "type": "MeshPhongMaterial",
+                "name": "cubeMat",
+                "spriteFile": "threejs/textures/images/megamanP.png",
+                "diffuseColor": [1, 1, 1],
+				"specularColor": [1, 1, 1]
+            }
+        },
+        {
+            "DESCRIPTION": "Two shape into one node",
+			"type": "node",
+			"name": "tree",
+			"rotate": [0, 1, 0, 0.5],
+            
+			"children": 
+			[
+				{
+					"type": "mesh",
+					"name": "cylinder1",
+					"translate": [5, 0, 0],
+					"scale": [0.5, 0.5, 0.5],
+					"geometry": "cylinder",
+					"material": 
+					{
+						"type": "meshPhongMaterial",
+						"name": "cylinder1",
+						"diffuseColor": [0.25, 0.3, 1.0],
+						"specularColor": [0.02, 0.02, 0.02],
+                        "scale": [1, 1, 2, 32]
+					}
+				},
+				{
+                    "type": "mesh",
+                    "name": "torus1",
+                    "translate": [5, 2, 0],
+                    "geometry": "torus",
+                    "material": 
+                    {
+                        "type": "meshPhongMaterial",
+                        "name": "torus1",
+                        "diffuseColor": [0.3, 0.7, 0.4],
+                        "specularColor": [0.02, 0.02, 0.02]
+                    }
+                }
+            ]
+			
+        }
+		
+    ]	
+}
