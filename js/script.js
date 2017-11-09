@@ -46,6 +46,10 @@ function init(){
 	                }
 	            }
 	        }
+	        // Disable volume control slider in midi player since sound volume can't be changed programmatically in mobile device 
+	        $('#volume-slider').prop("disabled", true);
+			$('#midi-vol-down-icon').css('opacity', '0.5');
+			$('#midi-vol-up-icon').css('opacity', '0.5');
 	    } catch (ex) {}
 	}
 
@@ -66,6 +70,7 @@ function init(){
 
 	// Initialize title and buttons
 	$('#title').text("");
+	$('#back-button').css( "opacity", "0" );
 	$('#back-button').css( "display", "none" );
 	$('#demo-prev').hide();
 	$('#demo-next').hide();
@@ -80,7 +85,7 @@ function init(){
 
 	// Change things according to screen size
 	$(window).on('resize', _.debounce(function() {
-	    console.log("Debouncing");
+	    //console.log("Debouncing");
 	    $('#volume-slider').val(audio.volume * 100).change();
 		$('#seek-slider').rangeslider('update', true);
 
@@ -106,7 +111,6 @@ function init(){
 			Page Navigation
 		======================================================================
 	*/
-
 	/* The lightbox image gallery that can be found in PROGRAMMING and DRUM, toggle via clicking the image of the demo page */
 	$('.flexslider-toggle').each(function(){
 		var self = this;
@@ -130,7 +134,6 @@ function init(){
 
 			callbacks: {
 				beforeOpen: function() {
-
 			    	//console.log("Opening - " + $(self).attr('toggle-target'));
 			    	$($(self).attr('toggle-target')).flexslider({
 			    		startAt: 0, 
@@ -236,13 +239,11 @@ function init(){
 			MIDI Player
 		======================================================================
 	*/
-
 	audio.addEventListener("timeupdate", function(){seekTimeUpdate();});
 	audio.addEventListener("ended", function(){switchTrack("next");})
 
 	/* Midi playlist's song button */
 	$('.midi-track-button').click(function(){
-
 		/* To solve a problem where the audio volume would suddenly turned into 0 */
 		if(audio.volume == 0){
 			//console.log("audio = " + audio.volume);
@@ -261,18 +262,20 @@ function init(){
 		polyfill:false,
 		onInit:function(){
 			seeking = false;
-			//$('.header .pull-right').text($('input[type="range"]').val()+'K');
+			reInitTrack(false);
 		},
 		onSlide:function(position, value){
-			$('#midi-current-time').text(secondToString(audio.duration * (value/100)));
-			//console.log('SEEK - position: ' + position, 'value: ' + value);
-			
-			//$('.header .pull-right').text(value+'K');
+
+			if(isNaN(audio.duration)){
+				$('#midi-current-time').text(secondToString('0'));
+			}
+			else{
+				$('#midi-current-time').text(secondToString(audio.duration * (value/100)));
+			}
+			//console.log('onSlide SEEK - position: ' + position, 'value: ' + value);
 		},
 		onSlideEnd:function(position, value){
-			//console.log('onSlideEnd');
-			//console.log("DURATION - " + audio.duration);
-			//console.log('SEEK - position: ' + position, 'value: ' + value);
+			//console.log('onSlideEnd SEEK - position: ' + position, 'value: ' + value);
 			seeking = false;
 			audio.currentTime = audio.duration * (value/100);
 		}
@@ -285,29 +288,42 @@ function init(){
 			audio.volume = 0.8;
 		},
 		onSlide:function(position, value){
-			//console.log('onSlide');
-			//console.log('VOL - position: ' + position, 'value: ' + value);
+			//console.log('onSlide VOL - position: ' + position, 'value: ' + value);
 			audio.volume = value / 100;
-			//$('.header .pull-right').text(value+'K');
-			
 		},
 		onSlideEnd:function(position, value){
-			//console.log('onSlideEnd');
-			//console.log('VOL - position: ' + position, 'value: ' + value);
+			//console.log('onSlideEnd VOL - position: ' + position, 'value: ' + value);
 			audio.volume = value / 100;
 		}
+	});
+
+	
+
+	$('.midi-track-button').click(function(){
+		/* To solve a problem where the audio volume would suddenly turned into 0 */
+		if(audio.volume == 0){
+			//console.log("audio = " + audio.volume);
+			audio.volume = 0.8;
+			$('#volume-slider').val(audio.volume * 100).change();
+		}
+
+		var thisTarget = $(this).attr('track-id');
+		currentPlaylistIndex = thisTarget;
+		reInitTrack(true);
 	});
 
 
 	/* MIDI Button: << PREV */
 	$('#midi-prev-button').click(function(){
+		// Simulate behavior of music players such as iTune
+		// Restart the track if audio.currentTime is greater than 2, else go to previous track
+		// This enables replay of the current track, and go to previous via double tap (if audio.currentTime is greater than 2)
 		if(audio.currentTime > 2){
 			audio.currentTime = 0;
 		}
 		else{
 			//console.log("PREV TRACK");
 			switchTrack("prev");
-			refreshMidiTrackList();
 		}
 	})
 
@@ -315,7 +331,6 @@ function init(){
 	$('#midi-next-button').click(function(){
 		//console.log("NEXT TRACK");
 		switchTrack("next");
-		refreshMidiTrackList();
 	})
 
 
@@ -475,13 +490,23 @@ $(document).ready(function(){
 	======================================================================
 */
 
-/* Handle page switching */
-/* pageType is the target page type, currentPageType is the previous one */
-function switchPage(pageType, pageIndex){
+/* 
+	Handle page switching
 
-	//console.log("target index = " + pageIndex);
+	Variables:
+		currentPageType - current page type before switching
 
-	if(currentPageType != pageType){
+	Arguments: 	
+		targetPageType - target page type to switch into
+		targetPageIndex - index of the slide to show in that page
+
+
+*/
+function switchPage(targetPageType, targetPageIndex){
+
+	//console.log("target index = " + targetPageIndex);
+
+	if(currentPageType != targetPageType){
 		// Stop current animation (eg. if the user switch pages rapidly and the previous animation is still going on)
 		$('#title').stop();
 		$('#back-button').stop();
@@ -494,10 +519,10 @@ function switchPage(pageType, pageIndex){
 
 			// Re-filter .slick
 			$('.slick').slick('slickUnfilter');
-	    	$('.slick').slick('slickFilter', "[page-type= '" + pageType +"']");
-	    	$('.slick').slick('slickGoTo', pageIndex, false);
+	    	$('.slick').slick('slickFilter', "[page-type= '" + targetPageType +"']");
+	    	$('.slick').slick('slickGoTo', targetPageIndex, false);
 
-	    	if(pageType == musicItem){
+	    	if(targetPageType == musicItem){
 	    		//console.log("initializing midi scrollbar");
 	    		$('#midi-tracklist-container-scroller').nanoScroller();
 	    		reInitTrack(false);
@@ -529,8 +554,8 @@ function switchPage(pageType, pageIndex){
 	    });
 
 		// Destroy nanoscroller plugin
-		// Placed outside of animation because currentPageType and pageType will already be the same after animation delay
-		if((currentPageType == musicItem || currentPageType == musicList) && (pageType != musicItem && pageType != musicList)){
+		// Placed outside of animation because currentPageType and targetPageType will already be the same after animation delay
+		if(targetPageType != musicItem){
 			//console.log("Destroying nanoscroller");
 			stopAudio();
 
@@ -541,29 +566,33 @@ function switchPage(pageType, pageIndex){
 
 		}
 
-		if((currentPageType != landingPage) && (pageType == landingPage)){
+		if((currentPageType != landingPage) && (targetPageType == landingPage)){
     		//Back to landing page
-    		$('#background-video-container').animate({opacity:'1'}, fadeInTime, 'swing');
-    		changeTextColor();
-    		$('#back-button').animate({opacity:'0'}, fadeInTime);
-    		$('#back-button').hide(fadeInTime);
+    		changeTextColor(true);
     	}
-    	else if((currentPageType == landingPage) && (pageType != landingPage)){
+    	else if((currentPageType == landingPage) && (targetPageType != landingPage)){
     		// From landing page to somewhere else
-    		$('#background-video-container').animate({opacity:'0'}, fadeInTime, 'swing');
-    		changeTextColor();
-    		$('#back-button').show(fadeInTime);
-			$('#back-button').animate({opacity:'1'}, fadeInTime);
+    		changeTextColor(false);
     	}
-
-	    currentPageType = pageType;
+	    currentPageType = targetPageType;
 	}
 }
 
 /* Change buttons font color to black when user navigate from landing page to other page */
-function changeTextColor(){
+function changeTextColor(isLandingPage){
 	$('#navigation-bottom button').toggleClass('black');
 	$("#navigation-bottom .row .bottom-vertical-divider").toggleClass('black');
+
+	if(isLandingPage){
+		$('#background-video-container').animate({opacity:'1'}, fadeInTime, 'swing');
+		$('#back-button').animate({opacity:'0'}, fadeInTime);
+		$('#back-button').hide(fadeInTime);
+	}
+	else{
+		$('#background-video-container').animate({opacity:'0'}, fadeInTime, 'swing');
+		$('#back-button').show();
+		$('#back-button').animate({opacity:'1'}, fadeInTime);
+	}
 }
 
 /* PREV/NEXT button in programming-item and music-item page */
@@ -579,7 +608,6 @@ function prevNextButton(direction){
     	else if (direction == "next"){
     		$('.slick').slick('next');
     	}
-
     	$('.slick').animate({opacity:'1'}, fadeInTime, 'swing');
 
     	// Change top title
@@ -642,7 +670,8 @@ if(agent.indexOf('opera') != -1){
 var playlist = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"];
 
 /* Track title */
-var trackTitle = ["Welcome Back", "Night Season", "Air Forest", "Bar Fight", 
+var trackTitle = [
+"Welcome Back", "Night Season", "Air Forest", "Bar Fight", 
 "Punk", "Sherd Master", "Gear Up", "RAWR", "Panic", "Insomnia", "See Ya"];
 
 /* Track compose date */
@@ -672,6 +701,11 @@ audio.controls = true;
 audio.loop = false;
 audio.autoplay = false;
 audio.volume = 0.8;
+audio.load();
+audio.addEventListener('loadedmetadata', function() {
+    $('#midi-end-time').text(secondToString(audio.duration));
+    $('#seek-slider').val('0').change();
+});
 
 function switchTrack(direction){
 	if(direction == "next"){
@@ -690,64 +724,39 @@ function switchTrack(direction){
 			currentPlaylistIndex--;
 		}
 	}
-	//console.log("SWITCH TO " + playlist[currentPlaylistIndex]);
+	//console.log("SWITCHING TO " + playlist[currentPlaylistIndex]);
 	reInitTrack(true);
-	audio.play();
-	seekTimeUpdate();
-	refreshMidiTrackList();
 }
 
 function seekTimeUpdate(){
 	var time = (audio.currentTime / audio.duration) * 100;
+
+	// Update seek-slider if user isn't pressing seeking bar
 	if(seeking === false){
 		$('#seek-slider').val(time).change();
 		$('#midi-current-time').text(secondToString(audio.currentTime));
-	}else{
-		//console.log("seeking = true");
 	}
-
-	// Re-print just in case if reInitTrack() failed to print at initialization
-	$('#midi-end-time').text(secondToString(audio.duration));
 }
 
 function reInitTrack(autoPlay){
 	audio.pause();
 	audio.src = 'audio/' + playlist[currentPlaylistIndex] + extension;
-	//audio.play();
+	audio.load();
+	$('#seek-slider').val(0).change();
 
-	if(autoPlay == false){
-		// Play for 50miliseconds just to get audio duration
-		window.setTimeout(function(){
-			$('#midi-end-time').text(secondToString(audio.duration));
-			audio.pause();
-		}, 50);
-		// Reset play time after getting audio duration
-		audio.currentTime = 0;
-		$('#midi-current-time').text(secondToString(audio.currentTime));
+	if(autoPlay === false){
 		$('#midi-play-button').html('<i class="fa fa-play" aria-hidden="true"></i>');
 	}
 	else{
-		var playPromise = audio.play();
-
-		if (playPromise !== undefined) {
-			playPromise.then(_ => {
-			    // Automatic playback started!
-			    // Show playing UI.
-			}).catch(error => {
-			    // Auto-play was prevented
-			    // Show paused UI.
-			});
-		}
-
-		$('#midi-current-time').text(secondToString(audio.currentTime));
-		$('#midi-end-time').text(secondToString(audio.duration));
+		audio.play();
 		$('#midi-play-button').html('<i class="fa fa-pause" aria-hidden="true"></i>');
 	}
 
-
+	$('#midi-current-time').text(secondToString(audio.currentTime));
 	$('#midi-title-text').html(trackTitle[currentPlaylistIndex]);
 	$('#midi-date-text').text(trackDate[currentPlaylistIndex]);
 	$('#midi-description-text').text(trackDescription[currentPlaylistIndex]);
+	refreshMidiTrackList();
 }
 
 /* Update playlist item's highlight */
