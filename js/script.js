@@ -77,10 +77,10 @@ function init(){
 
 	reInitTrack(false);
 
-	// Fade out initial white screen
+	/*// Fade out initial white screen
 	setTimeout(function(){
 		$('#initial-screen').hide(1500);
-	}, 300);
+	}, 300);*/
 
 	// Change things according to screen size
 	$(window).on('resize', _.debounce(function() {
@@ -425,7 +425,13 @@ function init(){
 
 $(document).ready(function(){
 
-	init();
+	//init();
+	$.when(init()).then(function() {
+		// Fade out initial white screen
+		setTimeout(function(){
+			$('#initial-screen').hide(1500);
+		}, 300);
+	});
 
 	// Load background video for landing page
 	if(!isMobileDevice()){
@@ -463,7 +469,6 @@ $(document).ready(function(){
 	else{
 		backgroundAnimation();
 	}
-
 
 	/* ==================== KEEP FOR STUDY PURPOSE ==================== */
 	/*	$('.slick').on('beforeChange', function(event, slick, currentSlide, nextSlide){
