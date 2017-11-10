@@ -138,7 +138,8 @@ html,body{
 	background-color: rgb(255,255,255);
 	position: absolute;
 	min-width: 100%;
-	min-height: 100%;
+	/*min-height: 100%;*/
+	min-height: 35rem;
 	width: auto;
 	height: auto;
 	overflow: hidden;
@@ -151,6 +152,7 @@ html,body{
     bottom: 0;
     left: 0;
     overflow: hidden;
+    min-height: 35rem;
     /*background-size: cover;*/
     background: url('../images/background.png') left center / cover no-repeat; /*center center / cover no-repeat;*/ /* Background fall back */
 	background-color: rgba(143,195,31,0.5);
@@ -183,13 +185,6 @@ html,body{
 	height: auto;
 	background-size: cover;
 }
-
-#video-background{
-	min-width: 100%;
-	min-height: 100%;
-	position: absolute;
-}
-
 
 
 
@@ -1069,6 +1064,7 @@ html,body{
 	}
 
 }
+
 
 @media only screen and (max-width: 768px) and (max-height: 620px) {
 	html,body{

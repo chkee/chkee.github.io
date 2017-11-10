@@ -76,7 +76,6 @@ function init(){
 	$('#demo-next').hide();
 
 	reInitTrack(false);
-	refreshMidiTrackList();
 
 	// Fade out initial white screen
 	setTimeout(function(){
@@ -254,7 +253,6 @@ function init(){
 		var thisTarget = $(this).attr('track-id');
 		currentPlaylistIndex = thisTarget;
 		reInitTrack(true);
-		refreshMidiTrackList();
 	});
 
 	/* MIDI player seeker */
@@ -262,7 +260,6 @@ function init(){
 		polyfill:false,
 		onInit:function(){
 			seeking = false;
-			reInitTrack(false);
 		},
 		onSlide:function(position, value){
 
@@ -297,20 +294,6 @@ function init(){
 		}
 	});
 
-	
-
-	$('.midi-track-button').click(function(){
-		/* To solve a problem where the audio volume would suddenly turned into 0 */
-		if(audio.volume == 0){
-			//console.log("audio = " + audio.volume);
-			audio.volume = 0.8;
-			$('#volume-slider').val(audio.volume * 100).change();
-		}
-
-		var thisTarget = $(this).attr('track-id');
-		currentPlaylistIndex = thisTarget;
-		reInitTrack(true);
-	});
 
 
 	/* MIDI Button: << PREV */
@@ -512,8 +495,6 @@ $(document).ready(function(){
 */
 function switchPage(targetPageType, targetPageIndex){
 
-	//console.log("target index = " + targetPageIndex);
-
 	if(currentPageType != targetPageType){
 		// Stop current animation (eg. if the user switch pages rapidly and the previous animation is still going on)
 		$('#title').stop();
@@ -530,10 +511,9 @@ function switchPage(targetPageType, targetPageIndex){
 	    	$('.slick').slick('slickFilter', "[page-type= '" + targetPageType +"']");
 	    	$('.slick').slick('slickGoTo', targetPageIndex, false);
 
-	    	if(targetPageType == musicItem){
+	    	if(targetPageType === musicItem){
 	    		//console.log("initializing midi scrollbar");
 	    		$('#midi-tracklist-container-scroller').nanoScroller();
-	    		reInitTrack(false);
 	    		$('#volume-slider').rangeslider('update', true);
 				$('#seek-slider').rangeslider('update', true);
 	    	}
@@ -762,11 +742,11 @@ function reInitTrack(autoPlay){
 	if(autoPlay === false){
 		$('#midi-play-button').html('<i class="fa fa-play" aria-hidden="true"></i>');
 	}
-	else{
-		//audio.play();
-		audio.onloadedmetadata = function() {
+	else if(autoPlay === true){
+		audio.play();
+		/*audio.onloadedmetadata = function() {
 		    audio.play();
-		};
+		};*/
 		$('#midi-play-button').html('<i class="fa fa-pause" aria-hidden="true"></i>');
 	}
 
