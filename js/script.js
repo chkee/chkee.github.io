@@ -429,7 +429,9 @@ $(document).ready(function(){
 	$.when(init()).then(function() {
 		// Fade out initial white screen
 		setTimeout(function(){
-			$('#initial-screen').hide(1500);
+			$('#initial-screen').animate({opacity:'0'}, 1500, 'swing', function(){
+				$('#initial-screen').hide();
+			});
 		}, 300);
 	});
 
