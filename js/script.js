@@ -5,18 +5,19 @@ const programmingList = "programming-list";
 const musicList = "music-list";
 const programmingItem = "programming-item";
 const musicItem = "music-item";
-var currentPageType = landingPage;
+let currentPageType = landingPage;
 
 // Animation timing
 const fadeOutTime = 220;
 const fadeInTime = 400;
 
+let isTablet = false;
+
 // To set resume expandable detail's height, will change accroding to page width
-var resumeDetailExpandHeight = 74;
+let resumeDetailExpandHeight = 120;
 
 /* Initialize some items, called on page load */
 function init(){
-
 	// Initialize the main slick which holds most of the site's content
 	$(".slick").slick({
 		infinite: true,
@@ -27,31 +28,7 @@ function init(){
 		swipe: false
 	});
 
-	// Removes hover effect if touch is enabled
-	var touch = 'ontouchstart' in document.documentElement
-            || navigator.maxTouchPoints > 0
-            || navigator.msMaxTouchPoints > 0;
-
-	if (touch) { // remove all :hover stylesheets
-	    try { // prevent exception on browsers not supporting DOM styleSheets properly
-	        for (var si in document.styleSheets) {
-	            var styleSheet = document.styleSheets[si];
-	            if (!styleSheet.rules) continue;
-
-	            for (var ri = styleSheet.rules.length - 1; ri >= 0; ri--) {
-	                if (!styleSheet.rules[ri].selectorText) continue;
-
-	                if (styleSheet.rules[ri].selectorText.match(':hover')) {
-	                    styleSheet.deleteRule(ri);
-	                }
-	            }
-	        }
-	        // Disable volume control slider in midi player since sound volume can't be changed programmatically in mobile device 
-	        $('#volume-slider').prop("disabled", true);
-			$('#midi-vol-down-icon').css('opacity', '0.5');
-			$('#midi-vol-up-icon').css('opacity', '0.5');
-	    } catch (ex) {}
-	}
+	removeHoverEffectIfTouchEnabled();
 
 	// Set text according to screen size
 	if($(window).width() < 840){
@@ -62,25 +39,12 @@ function init(){
 		document.getElementById("programming-button").innerHTML = 'PROGRAMMING';
 	}
 
-	if($(window).width() < 768){
-		resumeDetailExpandHeight = 60;
-	}else{
-		resumeDetailExpandHeight = 74;
-	}
-
 	// Initialize title and buttons
 	$('#title').text("");
 	$('#back-button').css( "opacity", "0" );
 	$('#back-button').css( "display", "none" );
 	$('#demo-prev').hide();
 	$('#demo-next').hide();
-
-	reInitTrack(false);
-
-	/*// Fade out initial white screen
-	setTimeout(function(){
-		$('#initial-screen').hide(1500);
-	}, 300);*/
 
 	// Change things according to screen size
 	$(window).on('resize', _.debounce(function() {
@@ -95,14 +59,7 @@ function init(){
 			document.getElementById("back-button").innerHTML = '<span>BACK | <b>✕</b></span>';
 			document.getElementById("programming-button").innerHTML = 'PROGRAMMING';
 		}
-
-		if($(window).width() < 768){
-			resumeDetailExpandHeight = 60;
-		}else{
-			resumeDetailExpandHeight = 74;
-		}
 	}, 100));
-
 
 
 	/*
@@ -112,9 +69,8 @@ function init(){
 	*/
 	/* The lightbox image gallery that can be found in PROGRAMMING and DRUM, toggle via clicking the image of the demo page */
 	$('.flexslider-toggle').each(function(){
-		var self = this;
+		const self = this;
 		$(this).magnificPopup({
-
 			// Delay in milliseconds before popup is removed
 			removalDelay: fadeOutTime,
 
@@ -189,190 +145,39 @@ function init(){
 
 	// Button: Bottom - PROGRAMMING
 	$("#programming-button").on("click",function(){
-		switchPage("programming-list");
+		switchPage(programmingList);
 	});
 
 	// Button: Bottom - RESUME
 	$("#resume-button").on("click",function(){
-		switchPage("resume-page");
+		switchPage(resumePage);
 	});
 
 	// Button: Bottom - MUSIC
 	$("#music-button").on("click",function(){
-		switchPage("music-list");
+		switchPage(musicList);
 	});
 
 	$(".programming-card").on("click",function(){
 		//console.log("index = " + $(this).attr('target-index'));
-		switchPage("programming-item", $(this).attr('target-index'));
+		switchPage(programmingItem, $(this).attr('target-index'));
 	});
 
 	$(".music-card").on("click",function(){
 		//console.log("index = " + $(this).attr('target-index'));
-		switchPage("music-item", $(this).attr('target-index'))
+		switchPage(musicItem, $(this).attr('target-index'))
 	});
 
 	$('#demo-prev').click(function(){
-		//console.log("PREV");
-		// Stop midi player when user move to the other slide
-		if(currentPageType == musicItem && (audio.paused == false)){
-			stopAudio();
-		}
+		stopAudio();
 		prevNextButton("prev");
 
 	})
 
 	$('#demo-next').click(function(){
-		//console.log("NEXT");
-		// Stop midi player when user move to the other slide
-		if(currentPageType == musicItem && (audio.paused == false)){
-			stopAudio();
-		}
+		stopAudio();
 		prevNextButton("next");
 	})
-
-
-
-	/*
-		======================================================================
-			MIDI Player
-		======================================================================
-	*/
-	audio.addEventListener("timeupdate", function(){seekTimeUpdate();});
-	audio.addEventListener("ended", function(){switchTrack("next");})
-
-	/* Midi playlist's song button */
-	$('.midi-track-button').click(function(){
-		/* To solve a problem where the audio volume would suddenly turned into 0 */
-		if(audio.volume == 0){
-			//console.log("audio = " + audio.volume);
-			audio.volume = 0.8;
-			$('#volume-slider').val(audio.volume * 100).change();
-		}
-
-		var thisTarget = $(this).attr('track-id');
-		currentPlaylistIndex = thisTarget;
-		reInitTrack(true);
-	});
-
-	/* MIDI player seeker */
-	$('#seek-slider').rangeslider({
-		polyfill:false,
-		onInit:function(){
-			seeking = false;
-		},
-		onSlide:function(position, value){
-
-			if(isNaN(audio.duration)){
-				$('#midi-current-time').text(secondToString('0'));
-			}
-			else{
-				$('#midi-current-time').text(secondToString(audio.duration * (value/100)));
-			}
-			//console.log('onSlide SEEK - position: ' + position, 'value: ' + value);
-		},
-		onSlideEnd:function(position, value){
-			//console.log('onSlideEnd SEEK - position: ' + position, 'value: ' + value);
-			seeking = false;
-			audio.currentTime = audio.duration * (value/100);
-		}
-	});
-
-	/* MIDI player volume changer. Doesn't work in mobile */
-	$('#volume-slider').rangeslider({
-		polyfill:false,
-		onInit:function(){
-			audio.volume = 0.8;
-		},
-		onSlide:function(position, value){
-			//console.log('onSlide VOL - position: ' + position, 'value: ' + value);
-			audio.volume = value / 100;
-		},
-		onSlideEnd:function(position, value){
-			//console.log('onSlideEnd VOL - position: ' + position, 'value: ' + value);
-			audio.volume = value / 100;
-		}
-	});
-
-
-
-	/* MIDI Button: << PREV */
-	$('#midi-prev-button').click(function(){
-		// Simulate behavior of music players such as iTune
-		// Restart the track if audio.currentTime is greater than 2, else go to previous track
-		// This enables replay of the current track, and go to previous via double tap (if audio.currentTime is greater than 2)
-		if(audio.currentTime > 2){
-			audio.currentTime = 0;
-		}
-		else{
-			//console.log("PREV TRACK");
-			switchTrack("prev");
-		}
-	})
-
-	/* MIDI Button: >> NEXT */
-	$('#midi-next-button').click(function(){
-		//console.log("NEXT TRACK");
-		switchTrack("next");
-	})
-
-
-	// For other browser
-	document.getElementById('seek-slider-container').addEventListener("mousedown", function(){
-		seeking = true;
-	})
-
-	document.getElementById('seek-slider-container').addEventListener("mouseup", function(){
-		if(seeking == true){
-			seeking = false;
-		}
-	})
-
-	// For chrome
-	document.getElementById('seek-slider-container').addEventListener("pointerdown", function() {
-		seeking = true;
-	}, false)
-
-	document.getElementById('seek-slider-container').addEventListener("pointerup", function() {
-		if(seeking == true){seeking = false;}
-	}, false)
-
-	// Mobile
-	document.getElementById('seek-slider-container').addEventListener("touchstart", function() {
-		seeking = true;
-	})
-
-	document.getElementById('seek-slider-container').addEventListener("touchend", function() {
-		if(seeking == true){seeking = false;}
-	})
-
-
-	/* MIDI Button: > Play */
-	$('#midi-play-button').click(function(){
-		//console.log("MIDI PLAY");
-		if(audio.volume == 0){
-			audio.volume = 0.8;
-			$('#volume-slider').val(audio.volume * 100).change();
-		}
-		if(audio.paused && audio.readyState > 0){
-			/*
-				audio.readyState will return a number
-				0 - No information is available about the media resource.
-				1 - Enough of the media resource has been retrieved that the metadata attributes are initialized. Seeking will no longer raise an exception.
-				2 - Data is available for the current playback position, but not enough to actually play more than one frame.
-				3 - Data for the current playback position as well as for at least a little bit of time into the future is available (in other words, at least two frames of video, for example).
-				4 - Enough data is available—and the download rate is high enough—that the media can be played through to the end without interruption.
-			*/
-			audio.play();
-			$('#midi-play-button').html('<i class="fa fa-pause" aria-hidden="true"></i>');
-		}
-		else{
-			audio.pause();
-			$('#midi-play-button').html('<i class="fa fa-play" aria-hidden="true"></i>');
-		}
-	})
-
-
 
 	/*
 		======================================================================
@@ -380,13 +185,11 @@ function init(){
 		======================================================================
 
 	*/
-
 	/* For Music -> Guitar */
 	$('.video-popup-toggle').each(function(){
-		var self = this;
+		const self = this;
 		$(this).magnificPopup({
-
-		// Delay in milliseconds before popup is removed
+			// Delay in milliseconds before popup is removed
 			removalDelay: 100,
 
 			// Class that is added to popup wrapper and background
@@ -394,16 +197,11 @@ function init(){
 			mainClass: 'mfp-fade',
 			navigateByImgClick: false,
 			closeBtnInside: false,
-
-			items: [
-			{
+			items: [{
 				src: $('<div class="container d-flex align-items-center justify-content-center"> <iframe src="https://player.vimeo.com/video/' + $(self).attr('toggle-target') + '?autoplay=1&title=0&byline=0&portrait=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> </div>'),
 				type: 'inline'
-			}
-			],
-
+			}],
 			callbacks: {
-
 				beforeOpen: function() {
 			    	//console.log("Opening = " + $(self).attr('toggle-target'));
 				},
@@ -422,23 +220,62 @@ function init(){
 	});
 } // End init()
 
+function removeHoverEffectIfTouchEnabled(){
+	// Removes hover effect if touch is enabled
+	const touch = 'ontouchstart' in document.documentElement
+            || navigator.maxTouchPoints > 0
+            || navigator.msMaxTouchPoints > 0;
+
+	if (touch) { // remove all :hover stylesheets
+		isTablet = true;
+		try { // prevent exception on browsers not supporting DOM styleSheets properly
+			for (let si in document.styleSheets) {
+				let styleSheet = document.styleSheets[si];
+				if (!styleSheet.rules) continue;
+
+				for (let ri = styleSheet.rules.length - 1; ri >= 0; ri--) {
+					if (!styleSheet.rules[ri].selectorText) continue;
+
+					if (styleSheet.rules[ri].selectorText.match(':hover')) {
+						styleSheet.deleteRule(ri);
+					}
+				}
+			}
+			// Disable volume control slider in midi player since sound volume can't be changed programmatically in mobile device 
+			$('#volume-slider').prop("disabled", true);
+			$('#midi-vol-down-icon').css('opacity', '0.5');
+			$('#midi-vol-up-icon').css('opacity', '0.5');
+		} catch (ex) {}
+	}
+
+}
+
 
 $(document).ready(function(){
+	// "Loading" text appears if the background image took more than 0.5 sec to load
+	$('#loading-text').animate({opacity: 1}, 500);
 
-	//init();
 	$.when(init()).then(function() {
-		// Fade out initial white screen
+		initMidi();
+		initGuitar();
+
+		// If something went wrong and pageLoaded is still false after 8sec, hide #loading-text and #initial-screen regardless
 		setTimeout(function(){
-			$('#initial-screen').animate({opacity:'0'}, 1500, 'swing', function(){
-				$('#initial-screen').hide();
-			});
-		}, 300);
+			if(!pageLoaded){
+				console.log('BG IMAGE LOAD TIMEOUT', { pageLoaded });
+				$('#loading-text').hide();
+				$('#initial-screen').animate({opacity:'0'}, 1500, 'swing', function(){
+					$('#initial-screen').hide();
+				});
+			}
+		}, 8000);
 	});
 
 	// Load background video for landing page
 	if(!isMobileDevice()){
-		var video = document.getElementById('background-video');
-		var sourceMp4 = document.createElement('source');
+		let video = document.getElementById('background-video');
+		video.onload(bgVideoOnLoadCallback()); // Need this here or there will be an error in the console
+		const sourceMp4 = document.createElement('source');
 		sourceMp4.setAttribute('src', 'video/grass-3.mp4');
 		sourceMp4.setAttribute('type', 'video/mp4');
 		sourceMp4.setAttribute('onerror', 'playerError()');
@@ -446,14 +283,12 @@ $(document).ready(function(){
 		video.appendChild(sourceMp4);
 		//video.play();
 
-		var playPromise = video.play();
-
+		let playPromise = video.play();
 		if (playPromise !== undefined) {
 			playPromise.then(_ => {
 		      // Automatic playback started!
 		      // Show playing UI.
-		  })
-			.catch(error => {
+		  }).catch(error => {
 		    	// Auto-play was prevented
 		    	// Run alternative moving background
 		    	playerError();
@@ -478,7 +313,7 @@ $(document).ready(function(){
 		$('#title').text($(slick.$slides.get(nextSlide)).attr('top-title'));
 
 	});*/
-});
+}); // End $(document).ready();
 
 
 
@@ -497,8 +332,6 @@ $(document).ready(function(){
 	Arguments: 	
 		targetPageType - target page type to switch into
 		targetPageIndex - index of the slide to show in that page
-
-
 */
 function switchPage(targetPageType, targetPageIndex){
 
@@ -519,10 +352,12 @@ function switchPage(targetPageType, targetPageIndex){
 	    	$('.slick').slick('slickGoTo', targetPageIndex, false);
 
 	    	if(targetPageType === musicItem){
-	    		//console.log("initializing midi scrollbar");
 	    		$('#midi-tracklist-container-scroller').nanoScroller();
+	    		$('#guitar-tracklist-container-scroller').nanoScroller();
 	    		$('#volume-slider').rangeslider('update', true);
+	    		$('#volume-slider-midi').rangeslider('update', true);
 				$('#seek-slider').rangeslider('update', true);
+				$('#seek-slider-midi').rangeslider('update', true);
 	    	}
 
 	    	$('.slick').animate({opacity:'1'}, fadeInTime, 'swing');
@@ -540,9 +375,9 @@ function switchPage(targetPageType, targetPageIndex){
 	    	}
 
 	    	// Change top title
-	    	var currentIndex = $(".slick").slick("slickCurrentSlide");
-			var $slides = $(".slick").slick("getSlick").$slides;
-			var topTitle = $slides.eq( currentIndex ).attr('top-title');
+	    	const currentIndex = $(".slick").slick("slickCurrentSlide");
+			let $slides = $(".slick").slick("getSlick").$slides;
+			const topTitle = $slides.eq( currentIndex ).attr('top-title');
 			$('#title').text(topTitle);
 	    	$('#title').animate({opacity:'1'}, fadeInTime, 'swing');
 
@@ -550,16 +385,14 @@ function switchPage(targetPageType, targetPageIndex){
 
 		// Destroy nanoscroller plugin
 		// Placed outside of animation because currentPageType and targetPageType will already be the same after animation delay
-		if(targetPageType != musicItem){
+		// if(targetPageType != musicItem){
 			//console.log("Destroying nanoscroller");
-			stopAudio();
-
+			// stopAudio();
 			// Destroy after 300 miliseconds so that the user won't see it destroying before the slide faded out
-			setTimeout(function(){
-				$(".nano").nanoScroller({ destroy: true });
-			}, 300);
-
-		}
+			// setTimeout(function(){
+			// 	$(".nano").nanoScroller({ destroy: true });
+			// }, 300);
+		// }
 
 		if((currentPageType != landingPage) && (targetPageType == landingPage)){
     		//Back to landing page
@@ -606,9 +439,9 @@ function prevNextButton(direction){
     	$('.slick').animate({opacity:'1'}, fadeInTime, 'swing');
 
     	// Change top title
-    	var currentIndex = $(".slick").slick("slickCurrentSlide");
-		var $slides = $(".slick").slick("getSlick").$slides;
-		var topTitle = $slides.eq( currentIndex ).attr('top-title');
+    	const currentIndex = $(".slick").slick("slickCurrentSlide");
+		let $slides = $(".slick").slick("getSlick").$slides;
+		const topTitle = $slides.eq( currentIndex ).attr('top-title');
 		$('#title').text(topTitle);
     	$('#title').animate({opacity:'1'}, fadeInTime, 'swing');
     });
@@ -620,195 +453,47 @@ function prevNextButton(direction){
 		RESUME DETAIL
 	======================================================================
 */
-
-var previousExpandedDetailID = "";
+let previousExpandedDetailID = "";
 
 function toggleDetail(id) {
 	if(previousExpandedDetailID != id && previousExpandedDetailID != ""){
 		//console.log("PREVIOUS DETAIL");
 		document.getElementById(previousExpandedDetailID+"-toggle").innerHTML = '<i class="fa fa-angle-right" aria-hidden="true"></i>' + " " + document.getElementById(previousExpandedDetailID+"-toggle").getAttribute("value");
-		document.getElementById(previousExpandedDetailID).style.height = '0px';
+		document.getElementById(previousExpandedDetailID).style.maxHeight = '0px';
+		document.getElementById(previousExpandedDetailID).style.marginBottom = '0px';
 		previousExpandedDetailID = id;
 	}
 
-	if (document.getElementById(id).style.height == '0px') {
+	if (document.getElementById(id).style.maxHeight == '0px') {
     	document.getElementById(id+"-toggle").innerHTML = '<i class="fa fa-angle-down" aria-hidden="true"></i>' + " " + document.getElementById(id+"-toggle").getAttribute("value");
-    	document.getElementById(id).style.height = resumeDetailExpandHeight + 'px';
+    	// document.getElementById(id).style.height = resumeDetailExpandHeight + 'px';
+    	document.getElementById(id).style.maxHeight = resumeDetailExpandHeight + 'px';
+    	document.getElementById(id).style.marginBottom = '20px';
     	previousExpandedDetailID = id;
     }
     else {
         document.getElementById(id+"-toggle").innerHTML = '<i class="fa fa-angle-right" aria-hidden="true"></i>' + " " + document.getElementById(id+"-toggle").getAttribute("value");
-        document.getElementById(id).style.height = '0px';
+        document.getElementById(id).style.maxHeight = '0px';
+		document.getElementById(id).style.marginBottom = '0px';
         previousExpandedDetailID = id;
     }
 }
 
-
-/*
-	======================================================================
-		MIDI PLAYER CONTROL
-	======================================================================
-*/
-
-// Default extension = mp3
-var extension = ".mp3";
-var agent = navigator.userAgent.toLowerCase();
-
-
-//Rumor said that firefox & opera won't support mp3, but mp3 seem to work fine for my firefox browser. still haven't tested on Opera though 
-if(agent.indexOf('opera') != -1){
-	//console.log("using .ogg");
-	extension = ".ogg";
-}
-
-/* File name of the tracks */
-var playlist = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"];
-
-/* Track title */
-var trackTitle = [
-"Welcome Back", "Night Season", "Air Forest", "Bar Fight", 
-"Punk", "Sherd Master", "Gear Up", "RAWR", "Panic", "Insomnia", "See Ya"];
-
-/* Track compose date */
-var trackDate = ["September 4, 2015", "March 5th, 2017", "April 15, 2010", "December 4, 2012", "May 19, 2015",
- "Unknown", "Febuary 29, 2016", "September 27, 2014", "January 27, 2012", "July 17, 2015", "October 3, 2012"];
-
-/* Track description */
-var trackDescription = [
-"Welcome back, you did great.", 
-"This is an ongoing draft that I've been working on since March of 2017.", 
-"Instrumental solo part of one of my oldest piece.", 
-"Hold my beer.", 
-" ", 
-"When I first started learning guitar, this is what I imagined how being a guitar sherd master would feel like.", 
-" ", 
-" ", 
-" ", 
-"Zzz", 
-"Okay bye."];
-
-var audio = new Audio();
-var currentPlaylistIndex = 0;
-var seeking = false; // Determine if user is pressing the player seeking bar
-
-audio.src = 'audio/' + playlist[currentPlaylistIndex] + extension;
-audio.controls = true;
-audio.loop = false;
-audio.autoplay = false;
-audio.volume = 0.8;
-audio.load();
-audio.addEventListener('loadedmetadata', function() {
-    $('#midi-end-time').text(secondToString(audio.duration));
-    $('#seek-slider').val('0').change();
-});
-
-function switchTrack(direction){
-	if(direction == "next"){
-		if(currentPlaylistIndex == playlist.length - 1){
-			currentPlaylistIndex = 0
-		}
-		else{
-			currentPlaylistIndex++;
-		}
-	}
-	else{
-		if(currentPlaylistIndex == 0){
-			currentPlaylistIndex = playlist.length - 1
-		}
-		else{
-			currentPlaylistIndex--;
-		}
-	}
-	//console.log("SWITCHING TO " + playlist[currentPlaylistIndex]);
-	reInitTrack(true);
-}
-
-function seekTimeUpdate(){
-	var time = (audio.currentTime / audio.duration) * 100;
-
-	// Update seek-slider if user isn't pressing seeking bar
-	if(seeking === false){
-		// time will be NaN when the media is still loading and #seek-slider will not behave properly 
-		if(isNaN(time)){
-			$('#seek-slider').val('0').change();
-		}
-		else{
-			$('#seek-slider').val(time).change();
-			$('#midi-current-time').text(secondToString(audio.currentTime));
-		}
-		
-	}
-}
-
-function reInitTrack(autoPlay){
-	audio.pause();
-	audio.src = 'audio/' + playlist[currentPlaylistIndex] + extension;
-	audio.load();
-	$('#seek-slider').val(0).change();
-
-	if(autoPlay === false){
-		$('#midi-play-button').html('<i class="fa fa-play" aria-hidden="true"></i>');
-	}
-	else if(autoPlay === true){
-		audio.play();
-		/*audio.onloadedmetadata = function() {
-		    audio.play();
-		};*/
-		$('#midi-play-button').html('<i class="fa fa-pause" aria-hidden="true"></i>');
-	}
-
-	$('#midi-current-time').text(secondToString(audio.currentTime));
-	$('#midi-title-text').html(trackTitle[currentPlaylistIndex]);
-	$('#midi-date-text').text(trackDate[currentPlaylistIndex]);
-	$('#midi-description-text').text(trackDescription[currentPlaylistIndex]);
-	refreshMidiTrackList();
-}
-
-/* Update playlist item's highlight */
-function refreshMidiTrackList(){
-	var playlistChildren = $('#midi-tracklist').children().toArray();
-
-	for(var i = 0; i <= playlist.length - 1; i++){
-		if($(playlistChildren[i]).attr('track-id') == currentPlaylistIndex){
-			//console.log("EQUAL TO PLAYLIST = " +  i);
-			//$(playlistChildren[i]).addClass('hovered');
-			$(playlistChildren[i]).css("background-color", "rgba(143,195,31, 0.5)");
-
-			$(playlistChildren[i]).hover(function(){
-				$(this).css("background-color", "rgba(143,195,31, 0.5)");
-			}, function(){
-				$(this).css("background-color", "rgba(143,195,31, 0.5)");
-			});
-		}
-		else{
-			//console.log("NOT EQUAL = " + i);
-			//$(playlistChildren[i]).removeClass('hovered');
-			$(playlistChildren[i]).css("background-color", "rgba(143,195,31, 0.1)");
-			$(playlistChildren[i]).hover(function(){
-				$(this).css("background-color", "rgba(143,195,31, 0.5)");
-				$(this).css("transition", "background-color 0s");
-			}, function(){
-				$(this).css("background-color", "rgba(143,195,31, 0.1)");
-				$(this).css("transition", " background-color 0.15s ease-out");
-			});
-		}
-	}
+// /* Stop the audio and reset the current play time */
+function stopAudio(){
+	shouldAutoPlayGuitar = false;
+	shouldAutoPlayMidi = false;
+	reInitTrackGuitar(false);
+	reInitTrackMidi(false);
 }
 
 /* Convert second into MM:SS format */
 function secondToString(input){
-	var min = Math.floor(input / 60);
-	var sec = Math.floor(input - min * 60);
+	const min = Math.floor(input / 60);
+	let sec = Math.floor(input - min * 60);
 	if(sec < 10){sec = "0" + sec;}
 
 	return (min + " : " + sec);
-}
-
-/* Stop the audio and reset the current play time */
-function stopAudio(){
-	audio.pause();
-	audio.currentTime = 0;
-	$('#midi-play-button').html('<i class="fa fa-play" aria-hidden="true"></i>');
 }
 
 /*
