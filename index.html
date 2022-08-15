@@ -26,7 +26,9 @@
 			// console.log('bgVideoOnLoadCallback()', { pageLoaded });
 			pageLoaded = true;
 			// Fade out initial white screen
-			$('#loading-text').hide();
+			$('#loading-text').animate({opacity:'0'}, 400, () => {
+				$('#loading-text').hide();
+			});
 			$('#initial-screen').animate({opacity:'0'}, 1500, 'swing', function(){
 				$('#initial-screen').hide();
 			});
@@ -70,7 +72,7 @@
 	<script src="js/script.js" async></script>
 </head>
 <body>
-	<!-- v2.0.2 -->
+	<!-- v2.0.3 -->
 
 	<div id="initial-screen">
 		<div id="loading-text">

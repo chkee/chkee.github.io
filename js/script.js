@@ -250,7 +250,11 @@ function removeHoverEffectIfTouchEnabled(){
 
 $(document).ready(function(){
 	// "Loading" text appears if the background image took more than 0.5 sec to load
-	$('#loading-text').animate({opacity: 1}, 500);
+	setTimeout(() => {
+		if(!pageLoaded){
+			$('#loading-text').animate({opacity: 1}, 300);
+		}
+	}, 500);
 
 	$.when(init()).then(function() {
 		initMidi();
@@ -482,15 +486,6 @@ function stopAudio(){
 	shouldAutoPlayMidi = false;
 	reInitTrackGuitar(false);
 	reInitTrackMidi(false);
-}
-
-/* Convert second into MM:SS format */
-function secondToString(input){
-	const min = Math.floor(input / 60);
-	let sec = Math.floor(input - min * 60);
-	if(sec < 10){sec = "0" + sec;}
-
-	return (min + " : " + sec);
 }
 
 /*

@@ -574,3 +574,12 @@ function refreshTrackList(){
 		}
 	}
 }
+
+/* Convert second into MM:SS format */
+function secondToString(input){
+	const min = Math.floor(input / 60);
+	let sec = Math.floor(input - min * 60);
+	if(sec < 10){sec = "0" + sec;}
+
+	return (min + " : " + sec);
+}
