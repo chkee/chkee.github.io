@@ -359,7 +359,9 @@ function switchPage(targetPageType, targetPageIndex){
 	    		$('#volume-slider-midi').rangeslider('update', true);
 				$('#seek-slider').rangeslider('update', true);
 				$('#seek-slider-midi').rangeslider('update', true);
-	    	}
+	    	} else {
+				stopAudio();
+			}
 
 	    	$('.slick').animate({opacity:'1'}, fadeInTime, 'swing');
 
