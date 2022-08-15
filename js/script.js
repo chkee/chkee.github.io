@@ -11,8 +11,6 @@ let currentPageType = landingPage;
 const fadeOutTime = 220;
 const fadeInTime = 400;
 
-let isTablet = false;
-
 // To set resume expandable detail's height, will change accroding to page width
 let resumeDetailExpandHeight = 120;
 
@@ -227,7 +225,6 @@ function removeHoverEffectIfTouchEnabled(){
             || navigator.msMaxTouchPoints > 0;
 
 	if (touch) { // remove all :hover stylesheets
-		isTablet = true;
 		try { // prevent exception on browsers not supporting DOM styleSheets properly
 			for (let si in document.styleSheets) {
 				let styleSheet = document.styleSheets[si];

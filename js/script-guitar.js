@@ -1,6 +1,11 @@
 let shouldAutoPlayGuitar = false;
 const extension = '.mp3'
 
+const isTablet = 'ontouchstart' in document.documentElement
+		|| navigator.maxTouchPoints > 0
+		|| navigator.msMaxTouchPoints > 0;
+
+
 /* 
   We will have differnt way of playing/flipping the audio here:
 
