@@ -599,8 +599,15 @@ html,body{
     object-fit: contain;
 }
 
+.demo-content-container{
+	overflow: auto;
+	max-height: 45rem;
+	min-height: 28rem;
+}
+
 .flexslider-toggle{
 	box-shadow: 1px 1px 5px #888888;
+	max-width: 550px;
 }
 
 .card-horizontal-divider .container [class*='col']:not(:last-child):after {
